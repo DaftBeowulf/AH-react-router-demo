@@ -1,21 +1,29 @@
 import React, { Component } from "react";
+import Note from "./Note";
+import { connect } from "react-redux";
+import { getNotes } from "../actions";
 
-const NotesList = ({ notes, deleteNote }) => {
-  return (
-    <ul>
-      {notes.map(note => (
-        <li key={note.id}>
-          {note.title}
-          <span
-            style={{ color: "red", cursor: "pointer" }}
-            onClick={() => deleteNote(note.id)}
-          >
-            X
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-};
+class NotesList extends React.Component {
+  componentDidMount() {
+    this.props.getNotes();
+  }
 
-export default NotesList;
+  render() {
+    return (
+      <div className="list-wrapper">
+        {this.props.notes.map(note => (
+          <Note key={note.id} note={note} />
+        ))}
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  notes: state.notes
+});
+
+export default connect(
+  mapStateToProps,
+  { getNotes }
+)(NotesList);

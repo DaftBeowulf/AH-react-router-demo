@@ -1,38 +1,14 @@
 import React from "react";
-import axios from "axios";
 import NotesList from "./NotesList";
+import FullNote from "./FullNote";
 
-export default class NotesPage extends React.Component {
+import { connect } from "react-redux";
+import { addNote } from "../actions";
+
+class NotesPage extends React.Component {
   state = {
-    notes: [],
     title: "",
     content: ""
-  };
-
-  url = "https://fsw14-lambda-notes.herokuapp.com/api/notes";
-
-  componentDidMount() {
-    axios
-      .get(this.url)
-      .then(res => this.setState({ notes: res.data }))
-      .catch(err => console.log("Error: ", err));
-  }
-
-  // changeHandler = ({target: {name, value}}) => {
-  //     this.setState({
-  //         newNote: {
-  //             [name]: value
-  //         }
-  //     })
-  // }
-
-  submitHandler = e => {
-    e.preventDefault();
-    // console.log("works");
-    axios
-      .post(this.url, { title: this.state.title, content: this.state.content })
-      .then(res => console.log(res.data))
-      .catch(err => console.log("Error: ", err));
   };
 
   changeHandler = e => {
@@ -41,12 +17,11 @@ export default class NotesPage extends React.Component {
     });
   };
 
-  deleteNote = id => {
-    axios
-      .delete(`${this.url}/${id}`)
-      .then(res => console.log(res))
-      .catch(err => console.log("Error: ", err));
-    // console.log(id);
+  submitHandler = e => {
+    e.preventDefault();
+    // console.log("works");
+    this.props.addNote(this.state);
+    this.setState({ title: "", content: "" });
   };
 
   render() {
@@ -73,11 +48,16 @@ export default class NotesPage extends React.Component {
           <button>Submit</button>
         </form>
 
-        <section>
-          <NotesList notes={this.state.notes} deleteNote={this.deleteNote} />
-          {/* <FullNote />    */}
+        <section className="note-section-wrapper">
+          <NotesList />
+          <FullNote />
         </section>
       </div>
     );
   }
 }
+
+export default connect(
+  null,
+  { addNote }
+)(NotesPage);
